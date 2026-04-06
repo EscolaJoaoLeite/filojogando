@@ -1,136 +1,472 @@
-<!-- VERSÃO FINAL OTIMIZADA -->
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Filojogando</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Jogo educativo de filosofia - Escola Estadual Dr. João Leite de Barros">
+  <title>🎰 Filojogando</title>
+  
+  <style>
+    :root {
+      --bg-primary: #0d1b2a;
+      --bg-secondary: #000814;
+      --bg-card: #1b263b;
+      --text-primary: #ffffff;
+      --text-gold: #ffd700;
+      --text-cyan: #00d4ff;
+      --success: #2ecc71;
+      --error: #e74c3c;
+      --warning: #f39c12;
+      --transition: all 0.3s ease;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      --radius: 12px;
+    }
 
-<style>
-body {
-  font-family: Arial;
-  margin:0;
-  background:#0d1b2a;
-  color:white;
-  text-align:center;
-}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-header {
-  background:#000814;
-  color:gold;
-  padding:10px;
-  font-weight:bold;
-}
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      text-align: center;
+      line-height: 1.6;
+      min-height: 100vh;
+      padding-bottom: 70px;
+    }
 
-.subtitulo {
-  color:#fff;
-  font-size:14px;
-}
+    /* Tela Inicial */
+    #inicio {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, var(--bg-secondary), var(--bg-primary));
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      transition: opacity 0.5s ease;
+    }
 
-.turmas {
-  margin-top:5px;
-  font-size:18px;
-  color:#00d4ff;
-}
+    #inicio.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
 
-#placar {
-  display:flex;
-  justify-content:center;
-  gap:20px;
-  flex-wrap:wrap;
-}
+    /* Cabeçalho */
+    header {
+      background: var(--bg-secondary);
+      color: var(--text-gold);
+      padding: 15px 10px;
+      font-weight: bold;
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
 
-.lado {
-  background:#1b263b;
-  padding:10px;
-  border-radius:10px;
-}
+    .sub {
+      font-size: 14px;
+      opacity: 0.9;
+      margin-top: 4px;
+    }
 
-.ativo { border:2px solid gold; }
+    .turmas {
+      margin-top: 5px;
+      color: var(--text-cyan);
+      font-weight: bold;
+      font-size: 1.1em;
+    }
 
-#roleta {
-  width:180px;
-  height:180px;
-  border-radius:50%;
-  border:8px solid gold;
-  margin:20px auto;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:30px;
-  transition: transform 3s cubic-bezier(.2,.8,.2,1);
-}
+    /* Conteúdo Principal */
+    main {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px 15px;
+    }
 
-button {
-  padding:15px;
-  font-size:18px;
-  background:gold;
-  border:none;
-  border-radius:10px;
-}
+    h1, h2 {
+      margin: 15px 0;
+      color: var(--text-gold);
+    }
 
-.opcao {
-  margin:10px auto;
-  padding:12px;
-  width:90%;
-  max-width:400px;
-  background:#1b263b;
-  border-radius:10px;
-}
+    /* Placar */
+    #placar {
+      background: var(--bg-card);
+      padding: 12px 20px;
+      border-radius: var(--radius);
+      margin: 15px 0;
+      font-size: 1.3em;
+      font-weight: bold;
+      box-shadow: var(--shadow);
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
 
-.correta { background:green !important; }
-.errada { background:red !important; }
+    #placar span {
+      transition: transform 0.2s ease;
+    }
 
-#ranking {
-  margin-top:20px;
-}
-</style>
+    #placar span.highlight {
+      animation: pulse 0.4s ease;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); color: var(--text-gold); }
+    }
+
+    /* Turno e Timer */
+    #turno {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      padding: 10px;
+      border-radius: var(--radius);
+      margin: 10px 0;
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+
+    #timer {
+      font-size: 1.5em;
+      font-weight: bold;
+      margin: 10px 0;
+      color: var(--warning);
+      transition: color 0.3s ease;
+    }
+
+    #timer.warning { color: #e67e22; }
+    #timer.danger { color: var(--error); animation: blink 0.5s infinite; }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    /* Roleta */
+    #roleta {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      border: 8px solid var(--text-gold);
+      margin: 20px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3em;
+      background: linear-gradient(135deg, var(--bg-card), #2c3e50);
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.3), var(--shadow);
+      transition: transform 3s cubic-bezier(0.2, 0.8, 0.2, 1);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    #roleta:hover {
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.5), var(--shadow);
+    }
+
+    #roleta.spinning {
+      pointer-events: none;
+    }
+
+    /* Botões */
+    button {
+      padding: 15px 30px;
+      margin: 10px;
+      font-size: 18px;
+      background: linear-gradient(135deg, var(--text-gold), #e6b800);
+      color: #000;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-weight: bold;
+      transition: var(--transition);
+      box-shadow: var(--shadow);
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    button:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Opções de Resposta */
+    #pergunta {
+      background: var(--bg-card);
+      padding: 20px;
+      border-radius: var(--radius);
+      margin: 20px 0;
+      font-size: 1.2em;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow);
+    }
+
+    #opcoes {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .opcao {
+      padding: 15px;
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: var(--transition);
+      border: 2px solid transparent;
+      text-align: left;
+      padding-left: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .opcao:hover:not(.disabled) {
+      background: #2c3e50;
+      transform: translateX(5px);
+      border-color: var(--text-cyan);
+    }
+
+    .opcao.disabled {
+      cursor: not-allowed;
+      opacity: 0.8;
+    }
+
+    .opcao.correta {
+      background: var(--success);
+      border-color: #27ae60;
+      animation: correct 0.5s ease;
+    }
+
+    .opcao.errada {
+      background: var(--error);
+      border-color: #c0392b;
+      animation: shake 0.5s ease;
+    }
+
+    @keyframes correct {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
+    }
+
+    /* Botões de Turma */
+    #inicio .turma-btn {
+      min-width: 200px;
+      margin: 8px;
+    }
+
+    /* Footer */
+    footer {
+      background: linear-gradient(135deg, #27ae60, #2ecc71);
+      padding: 12px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      font-size: 14px;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+      z-index: 100;
+    }
+
+    /* Responsividade */
+    @media (max-width: 480px) {
+      #roleta {
+        width: 150px;
+        height: 150px;
+        font-size: 2.5em;
+      }
+      
+      button {
+        padding: 12px 24px;
+        font-size: 16px;
+      }
+      
+      #placar {
+        font-size: 1.1em;
+        padding: 10px 15px;
+      }
+      
+      .opcao {
+        padding: 12px 15px;
+        font-size: 0.95em;
+      }
+    }
+
+    /* Acessibilidade */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        transition: none !important;
+        animation: none !important;
+      }
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* Mensagem de fim de jogo */
+    #mensagemFim {
+      display: none;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      padding: 20px;
+      border-radius: var(--radius);
+      margin: 20px 0;
+      font-size: 1.3em;
+      font-weight: bold;
+      animation: slideIn 0.5s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<header>
-ESCOLA ESTADUAL DR. JOÃO LEITE DE BARROS<br>
-<div class="subtitulo">Curso Normal Médio</div>
-<div class="turmas">Turmas: A B C D</div>
-</header>
+  <!-- Tela Inicial -->
+  <div id="inicio" role="dialog" aria-labelledby="tituloInicio">
+    <h2 id="tituloInicio">🎓 Escolha a turma</h2>
+    <div>
+      <button class="turma-btn" onclick="iniciar('A')" aria-label="Iniciar jogo com Turma A">Turma A</button>
+      <button class="turma-btn" onclick="iniciar('B')" aria-label="Iniciar jogo com Turma B">Turma B</button>
+      <button class="turma-btn" onclick="iniciar('C')" aria-label="Iniciar jogo com Turma C">Turma C</button>
+      <button class="turma-btn" onclick="iniciar('D')" aria-label="Iniciar jogo com Turma D">Turma D</button>
+    </div>
+    <p style="margin-top: 20px; opacity: 0.8; font-size: 14px;">
+      Clique em uma turma para começar o jogo!
+    </p>
+  </div>
 
-<h2>🎰 Filojogando</h2>
+  <!-- Cabeçalho -->
+  <header>
+    ESCOLA ESTADUAL DR. JOÃO LEITE DE BARROS
+    <div class="sub">Curso Normal Médio</div>
+    <div class="turmas" id="turmaSelecionada" aria-live="polite"></div>
+  </header>
 
-<div id="placar">
-<div id="ladoA" class="lado ativo">A: 0</div>
-<div id="ladoB" class="lado">B: 0</div>
-</div>
+  <!-- Conteúdo Principal -->
+  <main>
+    <h1>🎰 Filojogando</h1>
 
-<div id="turno">Vez do A</div>
-<div id="timer">Tempo: 15</div>
+    <!-- Placar -->
+    <div id="placar" role="status" aria-live="polite">
+      <span id="pA" aria-label="Pontos da equipe A">A: 0</span> 
+      <span aria-hidden="true">|</span> 
+      <span id="pB" aria-label="Pontos da equipe B">B: 0</span>
+    </div>
 
-<div id="roleta">🎡</div>
-<button onclick="girar()">Girar</button>
+    <!-- Informações do Jogo -->
+    <div id="turno" aria-live="polite">Vez do A</div>
+    <div id="timer" aria-live="polite">⏱️ Tempo: 15s</div>
 
-<div id="pergunta"></div>
-<div id="opcoes"></div>
+    <!-- Roleta -->
+    <div id="roleta" role="img" aria-label="Roleta do jogo" tabindex="0">🎡</div>
+    <button id="btnGirar" onclick="girar()" aria-label="Girar a roleta para sortear uma pergunta">🎰 Girar</button>
+    <button id="btnReset" onclick="resetarJogo()" style="background: linear-gradient(135deg, #e74c3c, #c0392b); display: none;" aria-label="Reiniciar o jogo">🔄 Reiniciar</button>
 
-<div id="ranking"></div>
+    <!-- Mensagem de Fim -->
+    <div id="mensagemFim" role="alert"></div>
 
-<!-- SONS -->
-<audio id="click" src="https://assets.mixkit.co/sfx/preview/mixkit-game-click-1114.mp3"></audio>
-<audio id="acerto" src="https://assets.mixkit.co/sfx/preview/mixkit-applause-447.mp3"></audio>
-<audio id="erro" src="https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-1261.mp3"></audio>
-<audio id="tempo" src="https://assets.mixkit.co/sfx/preview/mixkit-clock-countdown-bleeps-916.mp3"></audio>
-<audio id="fim" src="https://assets.mixkit.co/sfx/preview/mixkit-fail-bleep-2924.mp3"></audio>
+    <!-- Pergunta e Opções -->
+    <div id="pergunta" aria-live="polite"></div>
+    <div id="opcoes" role="group" aria-label="Opções de resposta"></div>
+  </main>
 
-<script>
+  <!-- Footer -->
+  <footer>
+    Desenvolvido por: Wellington Oliveira - PCPI 🚀
+  </footer>
 
-// DESBLOQUEAR SOM
-document.body.addEventListener("click", ()=>{
-  document.querySelectorAll("audio").forEach(a=>a.play().then(()=>a.pause()));
-}, {once:true});
+  <!-- Sons (com fallback) -->
+  <audio id="somClick" preload="auto">
+    <source src="https://assets.mixkit.co/sfx/preview/mixkit-game-click-1114.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="somAcerto" preload="auto">
+    <source src="https://assets.mixkit.co/sfx/preview/mixkit-applause-447.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="somErro" preload="auto">
+    <source src="https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-1261.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="somTempo" preload="auto">
+    <source src="https://assets.mixkit.co/sfx/preview/mixkit-clock-countdown-bleeps-916.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="somFim" preload="auto">
+    <source src="https://assets.mixkit.co/sfx/preview/mixkit-fail-bleep-2924.mp3" type="audio/mpeg">
+  </audio>
 
-// PERGUNTAS 
-// 👉  50 PERGUNTAS
-const perguntas = [
-  {
+  <script>
+    /**
+     * 🎮 Filojogando - Jogo Educativo de Filosofia
+     * Versão Melhorada - Código Único HTML
+     * 
+     * 👉 INSTRUÇÕES: Adicione suas perguntas no array abaixo
+     */
+
+    // 📚 BANCO DE PERGUNTAS (Edite aqui!)
+    const perguntas = [
+      {
+        pergunta: "Quem é considerado o pai da filosofia ocidental?",
+        opcoes: ["Platão", "Aristóteles", "Sócrates", "Tales de Mileto"],
+        correta: 3
+      },
+      {
+        pergunta: "Qual filósofo escreveu 'A República'?",
+        opcoes: ["Sócrates", "Platão", "Aristóteles", "Epicuro"],
+        correta: 1
+      },
+      {
+        pergunta: "O que significa 'Penso, logo existo'?",
+        opcoes: ["Frase de Aristóteles", "Frase de Descartes", "Frase de Kant", "Frase de Nietzsche"],
+        correta: 1
+      },
+      {
+        pergunta: "Qual é o método socrático?",
+        opcoes: ["Meditação", "Diálogo e questionamento", "Leitura silenciosa", "Escrita automática"],
+        correta: 1
+      },
+      {
+        pergunta: "O que é o 'Mito da Caverna'?",
+        opcoes: ["História de Platão sobre ilusão e conhecimento", "Lenda grega sobre cavernas", "Metáfora de Aristóteles", "Conto de Sócrates"],
+        correta: 0
+      }
+      {
     pergunta: "O que é Filosofia da Educação?",
     opcoes: [
       "Reflexão crítica sobre o fenômeno educativo",
@@ -582,113 +918,377 @@ const perguntas = [
       "Repetir ideias"
     ],
     correta: 1
-  }
-];
+  } ➕ Adicione mais perguntas seguindo o modelo acima
+    ];
 
-// CONFIG
-let lado="A",pA=0,pB=0,tempo=15,int,nums=[...Array(50).keys()];
+    // 🔧 ESTADO DO JOGO
+    const estado = {
+      lado: "A",
+      pA: 0,
+      pB: 0,
+      tempo: 15,
+      timer: null,
+      nums: [],
+      jogoIniciado: false,
+      girando: false,
+      respondendo: false
+    };
 
-// UI
-function atualizar(){
-ladoA.innerText="A: "+pA;
-ladoB.innerText="B: "+pB;
-turno.innerText="Vez do "+lado;
-ladoA.classList.toggle("ativo",lado==="A");
-ladoB.classList.toggle("ativo",lado==="B");
-}
+    // 🔗 REFERÊNCIAS DOM (cache para performance)
+    const elementos = {};
+    function cacheElementos() {
+      elementos.inicio = document.getElementById('inicio');
+      elementos.turmaSelecionada = document.getElementById('turmaSelecionada');
+      elementos.pA = document.getElementById('pA');
+      elementos.pB = document.getElementById('pB');
+      elementos.turno = document.getElementById('turno');
+      elementos.timer = document.getElementById('timer');
+      elementos.roleta = document.getElementById('roleta');
+      elementos.btnGirar = document.getElementById('btnGirar');
+      elementos.btnReset = document.getElementById('btnReset');
+      elementos.pergunta = document.getElementById('pergunta');
+      elementos.opcoes = document.getElementById('opcoes');
+      elementos.mensagemFim = document.getElementById('mensagemFim');
+      elementos.sons = {
+        click: document.getElementById('somClick'),
+        acerto: document.getElementById('somAcerto'),
+        erro: document.getElementById('somErro'),
+        tempo: document.getElementById('somTempo'),
+        fim: document.getElementById('somFim')
+      };
+    }
 
-// TIMER
-function timerStart(){
-clearInterval(int);
-tempo=15;
-int=setInterval(()=>{
-tempo--;
-timer.innerText="Tempo: "+tempo;
-tempoAudio.play();
-if(tempo<=0){
-clearInterval(int);
-fim.play();
-trocar();
-}
-},1000);
-}
+    // 🔊 SISTEMA DE ÁUDIO (com tratamento de erro)
+    function tocarSom(nome) {
+      const som = elementos.sons[nome];
+      if (!som) return;
+      
+      som.currentTime = 0;
+      som.play().catch(err => {
+        console.warn(`⚠️ Áudio '${nome}' não pôde ser reproduzido:`, err.message);
+        // Fallback: não interrompe o jogo se o áudio falhar
+      });
+    }
 
-// GIRAR
-function girar(){
-click.play();
+    function inicializarAudio() {
+      // Desbloqueia áudio no primeiro clique (política de navegadores)
+      Object.values(elementos.sons).forEach(som => {
+        if (som) {
+          som.volume = 0.1;
+          som.play().then(() => {
+            som.pause();
+            som.currentTime = 0;
+            som.volume = 1;
+          }).catch(() => {});
+        }
+      });
+    }
 
-let r=360*8+Math.random()*360;
-roleta.style.transform=`rotate(${r}deg)`;
+    // 🎮 INICIAR JOGO
+    function iniciar(turma) {
+      if (estado.jogoIniciado) return;
+      
+      elementos.inicio.classList.add('hidden');
+      elementos.turmaSelecionada.textContent = `🎓 Turma ${turma}`;
+      
+      inicializarAudio();
+      
+      // Resetar estado
+      estado.lado = "A";
+      estado.pA = 0;
+      estado.pB = 0;
+      estado.nums = [...Array(Math.min(50, perguntas.length)).keys()];
+      estado.jogoIniciado = true;
+      estado.girando = false;
+      estado.respondendo = false;
+      
+      atualizarInterface();
+      elementos.btnReset.style.display = 'inline-block';
+      elementos.mensagemFim.style.display = 'none';
+      
+      tocarSom('click');
+    }
 
-setTimeout(()=>{
-let i=Math.floor(Math.random()*nums.length);
-let n=nums.splice(i,1)[0];
-mostrar(n);
-timerStart();
-},3000);
-}
+    // 🔄 ATUALIZAR INTERFACE
+    function atualizarInterface() {
+      elementos.pA.textContent = `A: ${estado.pA}`;
+      elementos.pB.textContent = `B: ${estado.pB}`;
+      elementos.turno.textContent = `🎯 Vez do ${estado.lado}`;
+      elementos.timer.textContent = `⏱️ Tempo: ${estado.tempo}s`;
+      elementos.timer.className = '';
+      
+      // Destacar placar ao atualizar
+      [elementos.pA, elementos.pB].forEach(el => {
+        el.classList.remove('highlight');
+        void el.offsetWidth; // trigger reflow
+        el.classList.add('highlight');
+      });
+    }
 
-// PERGUNTA
-function mostrar(i){
-if(!perguntas[i]) return alert("Sem perguntas");
+    // ⏱️ TIMER COM FEEDBACK VISUAL
+    function iniciarTimer() {
+      clearInterval(estado.timer);
+      estado.tempo = 15;
+      atualizarInterface();
+      
+      estado.timer = setInterval(() => {
+        estado.tempo--;
+        elementos.timer.textContent = `⏱️ Tempo: ${estado.tempo}s`;
+        
+        // Feedback visual do timer
+        if (estado.tempo <= 5) {
+          elementos.timer.classList.add('danger');
+          if (estado.tempo > 0 && estado.tempo % 2 === 0) {
+            tocarSom('tempo');
+          }
+        } else if (estado.tempo <= 10) {
+          elementos.timer.classList.add('warning');
+        }
+        
+        if (estado.tempo <= 0) {
+          clearInterval(estado.timer);
+          tocarSom('fim');
+          finalizarRodada();
+        }
+      }, 1000);
+    }
 
-pergunta.innerText=perguntas[i].pergunta;
-opcoes.innerHTML="";
+    // 🎰 GIRAR ROLETA
+    function girar() {
+      if (!estado.jogoIniciado) {
+        alert('⚠️ Escolha uma turma primeiro!');
+        return;
+      }
+      
+      if (estado.girando || estado.respondendo) return;
+      
+      if (estado.nums.length === 0) {
+        elementos.mensagemFim.textContent = '🎉 Todas as perguntas foram respondidas!';
+        elementos.mensagemFim.style.display = 'block';
+        elementos.btnGirar.disabled = true;
+        return;
+      }
+      
+      estado.girando = true;
+      elementos.btnGirar.disabled = true;
+      elementos.roleta.classList.add('spinning');
+      elementos.pergunta.textContent = '';
+      elementos.opcoes.innerHTML = '';
+      
+      tocarSom('click');
+      
+      // Animação da roleta
+      const rotacoes = 10 + Math.floor(Math.random() * 5);
+      const anguloExtra = Math.random() * 360;
+      const total = rotacoes * 360 + anguloExtra;
+      
+      elementos.roleta.style.transform = `rotate(${total}deg)`;
+      
+      setTimeout(() => {
+        // Sortear pergunta única
+        const indice = Math.floor(Math.random() * estado.nums.length);
+        const numPergunta = estado.nums.splice(indice, 1)[0];
+        
+        mostrarPergunta(numPergunta);
+        iniciarTimer();
+        
+        estado.girando = false;
+        elementos.roleta.classList.remove('spinning');
+        elementos.btnGirar.disabled = false;
+      }, 3000);
+    }
 
-perguntas[i].opcoes.forEach((o,idx)=>{
-let d=document.createElement("div");
-d.className="opcao";
-d.innerText=o;
-d.onclick=()=>responder(idx,i);
-opcoes.appendChild(d);
-});
-}
+    // 📝 EXIBIR PERGUNTA
+    function mostrarPergunta(indice) {
+      const pergunta = perguntas[indice];
+      if (!pergunta) {
+        console.error('❌ Pergunta não encontrada no índice:', indice);
+        return;
+      }
+      
+      elementos.pergunta.textContent = pergunta.pergunta;
+      elementos.opcoes.innerHTML = '';
+      
+      pergunta.opcoes.forEach((opcao, idx) => {
+        const div = document.createElement('button');
+        div.className = 'opcao';
+        div.type = 'button';
+        div.innerHTML = `<strong>${String.fromCharCode(65 + idx)})</strong> ${opcao}`;
+        div.setAttribute('aria-label', `Opção ${String.fromCharCode(65 + idx)}: ${opcao}`);
+        div.onclick = () => responder(idx, indice);
+        div.onkeydown = (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            responder(idx, indice);
+          }
+        };
+        elementos.opcoes.appendChild(div);
+      });
+    }
 
-// RESPOSTA
-function responder(sel,i){
-clearInterval(int);
-let c=perguntas[i].correta;
+    // ✅ VERIFICAR RESPOSTA
+    function responder(selecionada, indicePergunta) {
+      if (estado.respondendo) return;
+      estado.respondendo = true;
+      
+      clearInterval(estado.timer);
+      
+      const pergunta = perguntas[indicePergunta];
+      const correta = pergunta.correta;
+      const opcoes = elementos.opcoes.querySelectorAll('.opcao');
+      
+      // Desabilitar todas as opções
+      opcoes.forEach(op => {
+        op.classList.add('disabled');
+        op.onclick = null;
+      });
+      
+      // Mostrar resposta correta
+      opcoes[correta].classList.add('correta');
+      
+      // Verificar acerto
+      if (selecionada === correta) {
+        tocarSom('acerto');
+        if (estado.lado === "A") {
+          estado.pA++;
+        } else {
+          estado.pB++;
+        }
+      } else {
+        tocarSom('erro');
+        if (opcoes[selecionada]) {
+          opcoes[selecionada].classList.add('errada');
+        }
+      }
+      
+      atualizarInterface();
+      
+      // Agendar próxima rodada
+      setTimeout(() => {
+        estado.respondendo = false;
+        trocarLado();
+      }, 2500);
+    }
 
-document.querySelectorAll(".opcao").forEach((o,idx)=>{
-if(idx===c)o.classList.add("correta");
-});
+    // 🔄 TROCAR LADO
+    function trocarLado() {
+      estado.lado = estado.lado === "A" ? "B" : "A";
+      atualizarInterface();
+      
+      // Limpar área de pergunta
+      elementos.pergunta.textContent = '🎰 Aguarde a próxima pergunta...';
+      elementos.opcoes.innerHTML = '';
+    }
 
-if(sel===c){
-acerto.play();
-lado==="A"?pA++:pB++;
-}else{
-erro.play();
-}
+    // 🔄 FINALIZAR RODADA (tempo esgotado)
+    function finalizarRodada() {
+      if (estado.respondendo) return;
+      
+      // Desabilitar opções se houver
+      elementos.opcoes.querySelectorAll('.opcao').forEach(op => {
+        op.classList.add('disabled');
+        op.onclick = null;
+      });
+      
+      // Mostrar qual era a correta (se houver pergunta ativa)
+      const indiceAtual = perguntas.findIndex(p => p.pergunta === elementos.pergunta.textContent);
+      if (indiceAtual !== -1 && perguntas[indiceAtual]) {
+        const correta = perguntas[indiceAtual].correta;
+        const opcoes = elementos.opcoes.querySelectorAll('.opcao');
+        if (opcoes[correta]) {
+          opcoes[correta].classList.add('correta');
+        }
+      }
+      
+      setTimeout(() => {
+        trocarLado();
+      }, 2000);
+    }
 
-salvar();
-atualizar();
-setTimeout(trocar,2000);
-}
+    // 🔄 REINICIAR JOGO
+    function resetarJogo() {
+      if (!confirm('🔄 Deseja realmente reiniciar o jogo?')) return;
+      
+      // Resetar estado
+      estado.pA = 0;
+      estado.pB = 0;
+      estado.lado = "A";
+      estado.nums = [...Array(Math.min(50, perguntas.length)).keys()];
+      estado.girando = false;
+      estado.respondendo = false;
+      estado.jogoIniciado = true; // Mantém jogo iniciado
+      
+      clearInterval(estado.timer);
+      
+      // Resetar interface
+      elementos.inicio.classList.remove('hidden');
+      elementos.turmaSelecionada.textContent = '';
+      elementos.pergunta.textContent = '';
+      elementos.opcoes.innerHTML = '';
+      elementos.mensagemFim.style.display = 'none';
+      elementos.btnGirar.disabled = false;
+      elementos.roleta.style.transform = 'rotate(0deg)';
+      elementos.roleta.classList.remove('spinning');
+      
+      atualizarInterface();
+      tocarSom('click');
+    }
 
-// TROCAR LADO
-function trocar(){
-lado=lado==="A"?"B":"A";
-atualizar();
-}
+    // 🎹 SUPORTE A TECLADO
+    function configurarTeclado() {
+      document.addEventListener('keydown', (e) => {
+        // Espaço ou Enter para girar (se não estiver em input)
+        if ((e.key === ' ' || e.key === 'Enter') && 
+            !estado.girando && 
+            estado.jogoIniciado &&
+            e.target.tagName !== 'BUTTON') {
+          e.preventDefault();
+          girar();
+        }
+        
+        // Teclas 1-4 para responder
+        if (estado.jogoIniciado && !estado.girando && !estado.respondendo) {
+          const tecla = e.key;
+          if (['1', '2', '3', '4'].includes(tecla)) {
+            const idx = parseInt(tecla) - 1;
+            const opcoes = elementos.opcoes.querySelectorAll('.opcao:not(.disabled)');
+            if (opcoes[idx]) {
+              e.preventDefault();
+              opcoes[idx].click();
+            }
+          }
+        }
+      });
+    }
 
-// SALVAR RANKING
-function salvar(){
-let dados=JSON.parse(localStorage.getItem("ranking")||"[]");
-dados.push({A:pA,B:pB,data:new Date().toLocaleString()});
-localStorage.setItem("ranking",JSON.stringify(dados));
-mostrarRanking();
-}
+    // 🚀 INICIALIZAÇÃO
+    function init() {
+      cacheElementos();
+      configurarTeclado();
+      atualizarInterface();
+      
+      // Suporte para clique na roleta
+      elementos.roleta.addEventListener('click', () => {
+        if (!estado.girando) girar();
+      });
+      
+      elementos.roleta.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          if (!estado.girando) girar();
+        }
+      });
+      
+      console.log('🎮 Filojogando carregado! Adicione suas perguntas no array "perguntas".');
+    }
 
-// MOSTRAR RANKING
-function mostrarRanking(){
-let dados=JSON.parse(localStorage.getItem("ranking")||"[]");
-ranking.innerHTML="<h3>Ranking</h3>"+dados.map(d=>`A:${d.A} B:${d.B}`).join("<br>");
-}
-
-atualizar();
-mostrarRanking();
-
-</script>
+    // Iniciar quando DOM estiver pronto
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  </script>
 
 </body>
 </html>
