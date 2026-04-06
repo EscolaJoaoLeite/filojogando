@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Filojogando - Filosofia da Educação</title>
+
+<style>
+body {
+  font-family: Arial;
+  text-align: center;
+  background: radial-gradient(circle, #0d1b2a, #000);
+  color: white;
+  margin: 0;
+}
+
+/* CABEÇALHO */
+header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: #000814;
+  color: gold;
+  padding: 10px;
+  font-weight: bold;
+}
+
+/* RODAPÉ */
+footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: #000814;
+  color: #ccc;
+  padding: 8px;
+  font-size: 14px;
+}
+
+/* CONTEÚDO */
+main {
+  margin-top: 70px;
+  margin-bottom: 60px;
+}
+
+h1 { color: gold; }
+
+#placar {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  font-size: 22px;
+}
+
+.lado {
+  padding: 10px 20px;
+  border-radius: 10px;
+  background: #1b263b;
+}
+
+.ativo {
+  border: 2px solid gold;
+}
+
+#turno { font-size: 20px; margin-top: 10px; }
+#timer { font-size: 18px; color: #00d4ff; }
+
+#roleta {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  border: 10px solid gold;
+  margin: 20px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  transition: transform 2s ease-out;
+  background: #1b263b;
+}
+
+button {
+  padding: 15px;
+  font-size: 18px;
+  background: gold;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.opcao {
+  margin: 10px auto;
+  padding: 12px;
+  width: 60%;
+  background: #1b263b;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.opcao:hover { background: #415a77; }
+
+.correta { background: green !important; }
+.errada { background: red !important; }
+.desativado { pointer-events: none; opacity: 0.5; }
+
+/* TELA FINAL */
+#final {
+  display: none;
+  position: fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background: rgba(0,0,0,0.95);
+  color: gold;
+  font-size: 30px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  ESCOLA ESTADUAL DR. JOÃO LEITE DE BARROS
+</header>
+
+<main>
+
+<h1>🎰 Filojogando</h1>
+<h2>Filosofia da Educação</h2>
+
+<div id="placar">
+  <div id="ladoA" class="lado ativo">Lado A: 0</div>
+  <div id="ladoB" class="lado">Lado B: 0</div>
+</div>
+
+<div id="turno">👉 Vez do Lado A</div>
+<div id="timer">⏱️ Tempo: 15</div>
+
+<div id="roleta">🎡</div>
+<button onclick="girarRoleta()">Girar Roleta</button>
+
+<div id="numero"></div>
+<div id="pergunta"></div>
+<div id="opcoes"></div>
+
+</main>
+
+<footer>
+  Desenvolvido por: Wellington Oliveira - PCPI
+</footer>
+
+<div id="final"></div>
+
+<!-- SONS -->
+<audio id="somAcerto" src="https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3"></audio>
+<audio id="somErro" src="https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-fail-notification-946.mp3"></audio>
+<audio id="somVitoria" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3"></audio>
+
+<script>
+
+// 👉 COLE AQUI SUAS 50 PERGUNTAS
+const perguntas = [
+  {
+    pergunta: "O que é Filosofia da Educação?",
+    opcoes: [
+      "Reflexão crítica sobre o fenômeno educativo",
+      "Um método de avaliação",
+      "Uma técnica de ensino",
+      "Um sistema político"
+    ],
+    correta: 0
+  },
+  {
+    pergunta: "A Filosofia da Educação busca refletir sobre:",
+    opcoes: [
+      "Somente conteúdos escolares",
+      "Tecnologias educacionais",
+      "O porquê e para quem educar",
+      "Apenas avaliações"
+    ],
+    correta: 2
+  },
+  {
+    pergunta: "A palavra Filosofia significa:",
+    opcoes: [
+      "Busca por poder",
+      "Amizade pela sabedoria",
+      "Ensino prático",
+      "Amor pela ciência"
+    ],
+    correta: 1
+  },
+  {
+    pergunta: "A Filosofia da Educação investiga:",
+    opcoes: [
+      "Apenas conteúdo",
+      "Somente alunos",
+      "Propósitos, métodos e valores",
+      "Somente métodos"
+    ],
+    correta: 2
+  },
+  {
+    pergunta: "A educação, segundo a filosofia, está ligada à:",
+    opcoes: [
+      "Avaliação",
+      "Formação humana",
+      "Disciplina",
+      "Tecnologia"
+    ],
+    correta: 1
+  },
+
+  // TOTALIDADE
+  {
+    pergunta: "O que a categoria de totalidade busca?",
+    opcoes: [
+      "Ignorar o contexto",
+      "Fragmentar o conhecimento",
+      "Compreender o todo",
+      "Isolar a escola"
+    ],
+    correta: 2
+  },
+  {
+    pergunta: "A educação não ocorre:",
+    opcoes: [
+      "Na sociedade",
+      "No vácuo",
+      "Na escola",
+      "Na cultura"
+    ],
+    correta: 1
+  },
+  {
+    pergunta: "A totalidade impede:",
+    opcoes: [
+      "O ensino",
+      "A fragmentação do saber",
+      "O pensamento crítico",
+      "A aprendizagem"
+    ],
+    correta: 1
+  },
+  {
+    pergunta: "A totalidade relaciona a educação com:",
+    opcoes: [
+      "Somente conteúdos",
+      "Estruturas sociais, políticas e econômicas",
+      "Somente o aluno",
+      "Apenas professores"
+    ],
+    correta: 1
+  },
+  {
+    pergunta: "Analisar a educação isoladamente gera:",
+    opcoes: [
+      "Aprendizagem",
+      "Conhecimento completo",
+      "Transformação",
+      "Análises superficiais"
+    ],
+    correta: 3
+  },
+
+  // HISTORICIDADE
+  {
+    pergunta: "Historicidade significa:",
+    opcoes: [
+      "Educação técnica",
+      "Educação fixa",
+      "Processo histórico e mutável",
+      "Educação isolada"
+    ],
+    correta: 2
+  },
+  {
+    pergunta: "O ser humano é:",
+    opcoes: [
+      "Imutável",
+      "Produto da história",
+      "Natural apenas",
+      "Fixo"
+    ],
+    correta: 1
+  },
+  {
+    pergunta: "A realidade é vista como:",
+    opcoes: [
+      "Imutável",
+      "Vir-a-ser",
+      "Pronta",
+      "Estática"
+    ],
+    correta: 1
+  },
+  {
+    pergunta: "A educação de hoje é fruto de:",
+    opcoes: [
+      "História e lutas sociais",
+      "Tecnologia",
+      "Política apenas",
+      "Ciência"
+    ],
+    correta: 0
+  },
+  {
+    pergunta: "A historicidade permite:",
+    opcoes: [
+      "Transformar práticas educativas",
+      "Manter tudo igual",
+      "Ignorar o passado",
+      "Eliminar mudanças"
+    ],
+    correta: 0
+  },
+
+  // DIALÉTICA
+  {
+    pergunta: "A dialética estuda:",
+    opcoes: [
+      "Apenas teoria",
+      "A realidade parada",
+      "A técnica",
+      "A realidade em movimento"
+    ],
+    correta: 3
+  },
+  {
+    pergunta: "A dialética trabalha com:",
+    opcoes: [
+      "Contradições",
+      "Neutralidade",
+      "Silêncio",
+      "Harmonia"
+    ],
+    correta: 0
+  },
+  {
+    pergunta: "Exemplo de contradição:",
+    opcoes: [
+      "Livro/caderno",
+      "Sala/escola",
+      "Educador/educando",
+      "Aluno/professor"
+    ],
+    correta: 2
+  },
+  {
+    pergunta: "A educação aparentemente neutra é:",
+    opcoes: [
+      "Simples",
+      "Natural",
+      "Política",
+      "Imparcial"
+    ],
+    correta: 2
+  },
+  {
+    pergunta: "A dialética busca:",
+    opcoes: [
+      "Ignorar conflitos",
+      "Superar contradições",
+      "Manter desigualdades",
+      "Eliminar reflexão"
+    ],
+    correta: 1
+  },
+
+  // PRÁXIS
+  {
+    pergunta: "Práxis significa:",
+    opcoes: [
+      "Somente ação",
+      "Ação + reflexão",
+      "Somente reflexão",
+      "Teoria"
+    ],
+    correta: 1
+  },
+  {
+    pergunta: "A práxis envolve:",
+    opcoes: [
+      "Apenas teoria",
+      "Agir sem pensar",
+      "Ação-reflexão-ação",
+      "Pensar sem agir"
+    ],
+    correta: 2
+  },
+  {
+    pergunta: "A educação libertadora valoriza:",
+    opcoes: [
+      "O aluno como objeto",
+      "O indivíduo como sujeito",
+      "A memorização",
+      "A disciplina rígida"
+    ],
+    correta: 1
+  },
+  {
+    pergunta: "A práxis transforma:",
+    opcoes: [
+      "A escola apenas",
+      "A teoria apenas",
+      "A prática consciente",
+      "O conteúdo"
+    ],
+    correta: 2
+  },
+  {
+    pergunta: "O papel do educador é:",
+    opcoes: [
+      "Aplicar provas",
+      "Ignorar alunos",
+      "Refletir sobre a prática",
+      "Repetir conteúdos"
+    ],
+    correta: 2
+  },
+
+  // RELAÇÃO EDUCAÇÃO E SOCIEDADE
+  {
+    pergunta: "A visão reprodutivista afirma que a escola:",
+    opcoes: [
+      "Reproduz desigualdades",
+      "É neutra",
+      "Transforma a sociedade",
+      "Ignora a sociedade"
+    ],
+    correta: 0
+  },
+  {
+    pergunta: "A educação pode ser:",
+    opcoes: [
+      "Sem função social",
+      "Ferramenta de emancipação",
+      "Apenas técnica",
+      "Somente avaliação"
+    ],
+    correta: 1
+  },
+  {
+    pergunta: "A pedagogia histórico-crítica defende:",
+    opcoes: [
+      "Transformação",
+      "Neutralidade",
+      "Memorização",
+      "Reprodução"
+    ],
+    correta: 0
+  },
+  {
+    pergunta: "Educação e sociedade estão:",
+    opcoes: [
+      "Separadas",
+      "Interligadas",
+      "Independentes",
+      "Opostas"
+    ],
+    correta: 1
+  },
+  {
+    pergunta: "A escola pode:",
+    opcoes: [
+      "Ser isolada",
+      "Transformar a sociedade",
+      "Ignorar a realidade",
+      "Ser neutra"
+    ],
+    correta: 1
+  },
+
+  // SÍNTESE + GERAIS (continua aleatório)
+  {
+    pergunta: "Totalidade responde:",
+    opcoes: [
+      "Quem ensina?",
+      "O que está acontecendo?",
+      "Por quê?",
+      "Como ensinar?"
+    ],
+    correta: 1
+  },
+  {
+    pergunta: "Historicidade responde:",
+    opcoes: [
+      "Onde?",
+      "Por que é assim?",
+      "O que?",
+      "Quem?"
+    ],
+    correta: 1
+  },
+  {
+    pergunta: "Dialética responde:",
+    opcoes: [
+      "Como manter?",
+      "Quem?",
+      "Como transformar?",
+      "Onde?"
+    ],
+    correta: 2
+  },
+
+  {
+    pergunta: "A educação deve formar:",
+    opcoes: [
+      "Apenas trabalhadores",
+      "Máquinas",
+      "Cidadãos críticos",
+      "Robôs"
+    ],
+    correta: 2
+  },
+  {
+    pergunta: "Educação crítica busca:",
+    opcoes: [
+      "Obediência",
+      "Silêncio",
+      "Consciência",
+      "Repetição"
+    ],
+    correta: 2
+  },
+  {
+    pergunta: "A filosofia ajuda o professor a:",
+    opcoes: [
+      "Repetir conteúdos",
+      "Compreender a realidade",
+      "Aplicar provas",
+      "Ignorar contexto"
+    ],
+    correta: 1
+  },
+  {
+    pergunta: "Educação transformadora é:",
+    opcoes: [
+      "Neutra",
+      "Crítica",
+      "Técnica",
+      "Passiva"
+    ],
+    correta: 1
+  },
+  {
+    pergunta: "O conhecimento deve ser:",
+    opcoes: [
+      "Limitado",
+      "Contextualizado",
+      "Fragmentado",
+      "Isolado"
+    ],
+    correta: 1
+  },
+  {
+    pergunta: "O professor deve ser:",
+    opcoes: [
+      "Autoritário",
+      "Crítico",
+      "Passivo",
+      "Repetidor"
+    ],
+    correta: 1
+  },
+  {
+    pergunta: "A educação está ligada à:",
+    opcoes: [
+      "Sociedade",
+      "Somente conteúdo",
+      "Somente escola",
+      "Somente aluno"
+    ],
+    correta: 0
+  },
+  {
+    pergunta: "Educar é:",
+    opcoes: [
+      "Controlar",
+      "Formar seres humanos",
+      "Treinar",
+      "Punir"
+    ],
+    correta: 1
+  },
+  {
+    pergunta: "A prática pedagógica deve ser:",
+    opcoes: [
+      "Imutável",
+      "Consciente",
+      "Automática",
+      "Repetitiva"
+    ],
+    correta: 1
+  },
+  {
+    pergunta: "A educação do futuro depende:",
+    opcoes: [
+      "Apenas tecnologia",
+      "Do passado e presente",
+      "Apenas governo",
+      "Apenas escola"
+    ],
+    correta: 1
+  },
+  {
+    pergunta: "A filosofia permite:",
+    opcoes: [
+      "Ignorar problemas",
+      "Pensar criticamente",
+      "Evitar reflexão",
+      "Repetir ideias"
+    ],
+    correta: 1
+  }
+];
+
+// CONFIG
+let numerosDisponiveis = Array.from({ length: 50 }, (_, i) => i);
+let ladoAtual = "A";
+let pontosA = 0;
+let pontosB = 0;
+let tempo = 15;
+let intervalo;
+let podeGirar = true;
+
+// ELEMENTOS
+const ladoAEl = document.getElementById("ladoA");
+const ladoBEl = document.getElementById("ladoB");
+const turnoEl = document.getElementById("turno");
+const timerEl = document.getElementById("timer");
+
+// FUNÇÕES
+function atualizarPlacar() {
+  ladoAEl.innerText = "Lado A: " + pontosA;
+  ladoBEl.innerText = "Lado B: " + pontosB;
+
+  ladoAEl.classList.toggle("ativo", ladoAtual === "A");
+  ladoBEl.classList.toggle("ativo", ladoAtual === "B");
+}
+
+function alternarLado() {
+  ladoAtual = ladoAtual === "A" ? "B" : "A";
+  turnoEl.innerText = "👉 Vez do Lado " + ladoAtual;
+  atualizarPlacar();
+}
+
+function iniciarTimer() {
+  clearInterval(intervalo);
+  tempo = 15;
+
+  timerEl.innerText = "⏱️ Tempo: " + tempo;
+
+  intervalo = setInterval(() => {
+    tempo--;
+    timerEl.innerText = "⏱️ Tempo: " + tempo;
+
+    if (tempo <= 0) {
+      clearInterval(intervalo);
+      bloquearRespostas();
+      alert("⏰ Tempo esgotado!");
+      alternarLado();
+    }
+  }, 1000);
+}
+
+function bloquearRespostas() {
+  document.querySelectorAll(".opcao").forEach(op => {
+    op.classList.add("desativado");
+  });
+}
+
+function girarRoleta() {
+  if (!podeGirar) return;
+  podeGirar = false;
+
+  if (numerosDisponiveis.length === 0) {
+    finalizarJogo();
+    return;
+  }
+
+  const roleta = document.getElementById("roleta");
+
+  let rotacao = 360 * 5 + Math.random() * 360;
+  roleta.style.transform = `rotate(${rotacao}deg)`;
+
+  setTimeout(() => {
+    const i = Math.floor(Math.random() * numerosDisponiveis.length);
+    const numero = numerosDisponiveis.splice(i,1)[0];
+
+    document.getElementById("numero").innerText = "🎯 Número: " + (numero + 1);
+
+    mostrarPergunta(numero);
+    iniciarTimer();
+
+    podeGirar = true;
+  }, 2000);
+}
+
+function mostrarPergunta(index) {
+  if (!perguntas[index]) {
+    alert("⚠️ Você ainda não colocou as perguntas!");
+    return;
+  }
+
+  const q = perguntas[index];
+
+  document.getElementById("pergunta").innerText = q.pergunta;
+
+  const opcoesDiv = document.getElementById("opcoes");
+  opcoesDiv.innerHTML = "";
+
+  q.opcoes.forEach((op, i) => {
+    const btn = document.createElement("div");
+    btn.className = "opcao";
+    btn.innerText = op;
+
+    btn.onclick = () => verificarResposta(btn, i, q.correta);
+
+    opcoesDiv.appendChild(btn);
+  });
+}
+
+function verificarResposta(el, sel, cor) {
+  clearInterval(intervalo);
+
+  document.querySelectorAll(".opcao").forEach((op, i) => {
+    if (i === cor) op.classList.add("correta");
+  });
+
+  if (sel === cor) {
+    el.classList.add("correta");
+    document.getElementById("somAcerto").play();
+    ladoAtual === "A" ? pontosA++ : pontosB++;
+  } else {
+    el.classList.add("errada");
+    document.getElementById("somErro").play();
+  }
+
+  bloquearRespostas();
+  atualizarPlacar();
+
+  setTimeout(alternarLado, 2000);
+}
+
+function finalizarJogo() {
+  let texto = "";
+
+  if (pontosA > pontosB) texto = "🏆 Lado A venceu!";
+  else if (pontosB > pontosA) texto = "🏆 Lado B venceu!";
+  else texto = "🤝 Empate!";
+
+  const final = document.getElementById("final");
+  final.style.display = "flex";
+  final.innerHTML = texto + "<br><br>🎉 Parabéns!";
+
+  document.getElementById("somVitoria").play();
+}
+
+// iniciar
+atualizarPlacar();
+
+</script>
+
+</body>
+</html>
