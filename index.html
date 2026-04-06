@@ -1,120 +1,88 @@
+<!-- VERSÃO FINAL OTIMIZADA -->
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Filojogando - Filosofia da Educação</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Filojogando</title>
 
 <style>
 body {
   font-family: Arial;
-  text-align: center;
-  background: radial-gradient(circle, #0d1b2a, #000);
-  color: white;
-  margin: 0;
+  margin:0;
+  background:#0d1b2a;
+  color:white;
+  text-align:center;
 }
 
-/* CABEÇALHO */
 header {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  background: #000814;
-  color: gold;
-  padding: 10px;
-  font-weight: bold;
+  background:#000814;
+  color:gold;
+  padding:10px;
+  font-weight:bold;
 }
 
-/* RODAPÉ */
-footer {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  background: #000814;
-  color: #ccc;
-  padding: 8px;
-  font-size: 14px;
+.subtitulo {
+  color:#fff;
+  font-size:14px;
 }
 
-/* CONTEÚDO */
-main {
-  margin-top: 70px;
-  margin-bottom: 60px;
+.turmas {
+  margin-top:5px;
+  font-size:18px;
+  color:#00d4ff;
 }
-
-h1 { color: gold; }
 
 #placar {
-  display: flex;
-  justify-content: center;
-  gap: 40px;
-  font-size: 22px;
+  display:flex;
+  justify-content:center;
+  gap:20px;
+  flex-wrap:wrap;
 }
 
 .lado {
-  padding: 10px 20px;
-  border-radius: 10px;
-  background: #1b263b;
+  background:#1b263b;
+  padding:10px;
+  border-radius:10px;
 }
 
-.ativo {
-  border: 2px solid gold;
-}
-
-#turno { font-size: 20px; margin-top: 10px; }
-#timer { font-size: 18px; color: #00d4ff; }
+.ativo { border:2px solid gold; }
 
 #roleta {
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  border: 10px solid gold;
-  margin: 20px auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 40px;
-  transition: transform 2s ease-out;
-  background: #1b263b;
+  width:180px;
+  height:180px;
+  border-radius:50%;
+  border:8px solid gold;
+  margin:20px auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:30px;
+  transition: transform 3s cubic-bezier(.2,.8,.2,1);
 }
 
 button {
-  padding: 15px;
-  font-size: 18px;
-  background: gold;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
+  padding:15px;
+  font-size:18px;
+  background:gold;
+  border:none;
+  border-radius:10px;
 }
 
 .opcao {
-  margin: 10px auto;
-  padding: 12px;
-  width: 60%;
-  background: #1b263b;
-  border-radius: 10px;
-  cursor: pointer;
+  margin:10px auto;
+  padding:12px;
+  width:90%;
+  max-width:400px;
+  background:#1b263b;
+  border-radius:10px;
 }
 
-.opcao:hover { background: #415a77; }
+.correta { background:green !important; }
+.errada { background:red !important; }
 
-.correta { background: green !important; }
-.errada { background: red !important; }
-.desativado { pointer-events: none; opacity: 0.5; }
-
-/* TELA FINAL */
-#final {
-  display: none;
-  position: fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background: rgba(0,0,0,0.95);
-  color: gold;
-  font-size: 30px;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
+#ranking {
+  margin-top:20px;
 }
 </style>
 </head>
@@ -122,45 +90,45 @@ button {
 <body>
 
 <header>
-  ESCOLA ESTADUAL DR. JOÃO LEITE DE BARROS
+ESCOLA ESTADUAL DR. JOÃO LEITE DE BARROS<br>
+<div class="subtitulo">Curso Normal Médio</div>
+<div class="turmas">Turmas: A B C D</div>
 </header>
 
-<main>
-
-<h1>🎰 Filojogando</h1>
-<h2>Filosofia da Educação</h2>
+<h2>🎰 Filojogando</h2>
 
 <div id="placar">
-  <div id="ladoA" class="lado ativo">Lado A: 0</div>
-  <div id="ladoB" class="lado">Lado B: 0</div>
+<div id="ladoA" class="lado ativo">A: 0</div>
+<div id="ladoB" class="lado">B: 0</div>
 </div>
 
-<div id="turno">👉 Vez do Lado A</div>
-<div id="timer">⏱️ Tempo: 15</div>
+<div id="turno">Vez do A</div>
+<div id="timer">Tempo: 15</div>
 
 <div id="roleta">🎡</div>
-<button onclick="girarRoleta()">Girar Roleta</button>
+<button onclick="girar()">Girar</button>
 
-<div id="numero"></div>
 <div id="pergunta"></div>
 <div id="opcoes"></div>
 
-</main>
-
-<footer>
-  Desenvolvido por: Wellington Oliveira - PCPI
-</footer>
-
-<div id="final"></div>
+<div id="ranking"></div>
 
 <!-- SONS -->
-<audio id="somAcerto" src="https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3"></audio>
-<audio id="somErro" src="https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-fail-notification-946.mp3"></audio>
-<audio id="somVitoria" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3"></audio>
+<audio id="click" src="https://assets.mixkit.co/sfx/preview/mixkit-game-click-1114.mp3"></audio>
+<audio id="acerto" src="https://assets.mixkit.co/sfx/preview/mixkit-applause-447.mp3"></audio>
+<audio id="erro" src="https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-1261.mp3"></audio>
+<audio id="tempo" src="https://assets.mixkit.co/sfx/preview/mixkit-clock-countdown-bleeps-916.mp3"></audio>
+<audio id="fim" src="https://assets.mixkit.co/sfx/preview/mixkit-fail-bleep-2924.mp3"></audio>
 
 <script>
 
-// 👉 COLE AQUI SUAS 50 PERGUNTAS
+// DESBLOQUEAR SOM
+document.body.addEventListener("click", ()=>{
+  document.querySelectorAll("audio").forEach(a=>a.play().then(()=>a.pause()));
+}, {once:true});
+
+// PERGUNTAS 
+// 👉  50 PERGUNTAS
 const perguntas = [
   {
     pergunta: "O que é Filosofia da Educação?",
@@ -618,149 +586,107 @@ const perguntas = [
 ];
 
 // CONFIG
-let numerosDisponiveis = Array.from({ length: 50 }, (_, i) => i);
-let ladoAtual = "A";
-let pontosA = 0;
-let pontosB = 0;
-let tempo = 15;
-let intervalo;
-let podeGirar = true;
+let lado="A",pA=0,pB=0,tempo=15,int,nums=[...Array(50).keys()];
 
-// ELEMENTOS
-const ladoAEl = document.getElementById("ladoA");
-const ladoBEl = document.getElementById("ladoB");
-const turnoEl = document.getElementById("turno");
-const timerEl = document.getElementById("timer");
-
-// FUNÇÕES
-function atualizarPlacar() {
-  ladoAEl.innerText = "Lado A: " + pontosA;
-  ladoBEl.innerText = "Lado B: " + pontosB;
-
-  ladoAEl.classList.toggle("ativo", ladoAtual === "A");
-  ladoBEl.classList.toggle("ativo", ladoAtual === "B");
+// UI
+function atualizar(){
+ladoA.innerText="A: "+pA;
+ladoB.innerText="B: "+pB;
+turno.innerText="Vez do "+lado;
+ladoA.classList.toggle("ativo",lado==="A");
+ladoB.classList.toggle("ativo",lado==="B");
 }
 
-function alternarLado() {
-  ladoAtual = ladoAtual === "A" ? "B" : "A";
-  turnoEl.innerText = "👉 Vez do Lado " + ladoAtual;
-  atualizarPlacar();
+// TIMER
+function timerStart(){
+clearInterval(int);
+tempo=15;
+int=setInterval(()=>{
+tempo--;
+timer.innerText="Tempo: "+tempo;
+tempoAudio.play();
+if(tempo<=0){
+clearInterval(int);
+fim.play();
+trocar();
+}
+},1000);
 }
 
-function iniciarTimer() {
-  clearInterval(intervalo);
-  tempo = 15;
+// GIRAR
+function girar(){
+click.play();
 
-  timerEl.innerText = "⏱️ Tempo: " + tempo;
+let r=360*8+Math.random()*360;
+roleta.style.transform=`rotate(${r}deg)`;
 
-  intervalo = setInterval(() => {
-    tempo--;
-    timerEl.innerText = "⏱️ Tempo: " + tempo;
-
-    if (tempo <= 0) {
-      clearInterval(intervalo);
-      bloquearRespostas();
-      alert("⏰ Tempo esgotado!");
-      alternarLado();
-    }
-  }, 1000);
+setTimeout(()=>{
+let i=Math.floor(Math.random()*nums.length);
+let n=nums.splice(i,1)[0];
+mostrar(n);
+timerStart();
+},3000);
 }
 
-function bloquearRespostas() {
-  document.querySelectorAll(".opcao").forEach(op => {
-    op.classList.add("desativado");
-  });
+// PERGUNTA
+function mostrar(i){
+if(!perguntas[i]) return alert("Sem perguntas");
+
+pergunta.innerText=perguntas[i].pergunta;
+opcoes.innerHTML="";
+
+perguntas[i].opcoes.forEach((o,idx)=>{
+let d=document.createElement("div");
+d.className="opcao";
+d.innerText=o;
+d.onclick=()=>responder(idx,i);
+opcoes.appendChild(d);
+});
 }
 
-function girarRoleta() {
-  if (!podeGirar) return;
-  podeGirar = false;
+// RESPOSTA
+function responder(sel,i){
+clearInterval(int);
+let c=perguntas[i].correta;
 
-  if (numerosDisponiveis.length === 0) {
-    finalizarJogo();
-    return;
-  }
+document.querySelectorAll(".opcao").forEach((o,idx)=>{
+if(idx===c)o.classList.add("correta");
+});
 
-  const roleta = document.getElementById("roleta");
-
-  let rotacao = 360 * 5 + Math.random() * 360;
-  roleta.style.transform = `rotate(${rotacao}deg)`;
-
-  setTimeout(() => {
-    const i = Math.floor(Math.random() * numerosDisponiveis.length);
-    const numero = numerosDisponiveis.splice(i,1)[0];
-
-    document.getElementById("numero").innerText = "🎯 Número: " + (numero + 1);
-
-    mostrarPergunta(numero);
-    iniciarTimer();
-
-    podeGirar = true;
-  }, 2000);
+if(sel===c){
+acerto.play();
+lado==="A"?pA++:pB++;
+}else{
+erro.play();
 }
 
-function mostrarPergunta(index) {
-  if (!perguntas[index]) {
-    alert("⚠️ Você ainda não colocou as perguntas!");
-    return;
-  }
-
-  const q = perguntas[index];
-
-  document.getElementById("pergunta").innerText = q.pergunta;
-
-  const opcoesDiv = document.getElementById("opcoes");
-  opcoesDiv.innerHTML = "";
-
-  q.opcoes.forEach((op, i) => {
-    const btn = document.createElement("div");
-    btn.className = "opcao";
-    btn.innerText = op;
-
-    btn.onclick = () => verificarResposta(btn, i, q.correta);
-
-    opcoesDiv.appendChild(btn);
-  });
+salvar();
+atualizar();
+setTimeout(trocar,2000);
 }
 
-function verificarResposta(el, sel, cor) {
-  clearInterval(intervalo);
-
-  document.querySelectorAll(".opcao").forEach((op, i) => {
-    if (i === cor) op.classList.add("correta");
-  });
-
-  if (sel === cor) {
-    el.classList.add("correta");
-    document.getElementById("somAcerto").play();
-    ladoAtual === "A" ? pontosA++ : pontosB++;
-  } else {
-    el.classList.add("errada");
-    document.getElementById("somErro").play();
-  }
-
-  bloquearRespostas();
-  atualizarPlacar();
-
-  setTimeout(alternarLado, 2000);
+// TROCAR LADO
+function trocar(){
+lado=lado==="A"?"B":"A";
+atualizar();
 }
 
-function finalizarJogo() {
-  let texto = "";
-
-  if (pontosA > pontosB) texto = "🏆 Lado A venceu!";
-  else if (pontosB > pontosA) texto = "🏆 Lado B venceu!";
-  else texto = "🤝 Empate!";
-
-  const final = document.getElementById("final");
-  final.style.display = "flex";
-  final.innerHTML = texto + "<br><br>🎉 Parabéns!";
-
-  document.getElementById("somVitoria").play();
+// SALVAR RANKING
+function salvar(){
+let dados=JSON.parse(localStorage.getItem("ranking")||"[]");
+dados.push({A:pA,B:pB,data:new Date().toLocaleString()});
+localStorage.setItem("ranking",JSON.stringify(dados));
+mostrarRanking();
 }
 
-// iniciar
-atualizarPlacar();
+// MOSTRAR RANKING
+function mostrarRanking(){
+let dados=JSON.parse(localStorage.getItem("ranking")||"[]");
+ranking.innerHTML="<h3>Ranking</h3>"+dados.map(d=>`A:${d.A} B:${d.B}`).join("<br>");
+}
+
+atualizar();
+mostrarRanking();
 
 </script>
 
